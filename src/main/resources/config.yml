@@ -1,7 +1,16 @@
 world: "world"
 
-solo:
+multi:
   spawn:
     x: 100
     y: 100
     z: 100
+  spawnable_zone:
+    #hauteure
+    y: 100
+
+    x1: 102
+    z1: 69
+
+    x2: 107
+    z2: 74
