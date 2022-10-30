@@ -11,7 +11,7 @@ import org.bukkit.Location;
 
 public class SpawnableArea{
     // liste des spawns dispos
-    ArrayList<Location> spawns = new ArrayList<Location>();
+    ArrayList<Location> spawns;
 
     // constructeur
     public SpawnableArea(ArrayList<Location> spawns) {

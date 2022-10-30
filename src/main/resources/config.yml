@@ -5,12 +5,7 @@ multi:
     x: 100
     y: 100
     z: 100
-  spawnable_zone:
-    #hauteure
+  spawnable_point:
+    x: 92
     y: 100
-
-    x1: 102
-    z1: 69
-
-    x2: 107
-    z2: 74
+    z: 100

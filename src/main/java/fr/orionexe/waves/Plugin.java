@@ -6,10 +6,11 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.orionexe.waves.commands.LaunchCommands;
+import fr.orionexe.waves.commands.MultiLaunchCommands;
 
 /*
  * waves java plugin
@@ -34,15 +35,21 @@ public class Plugin extends JavaPlugin
 
 	public void onEnable(){
 		saveDefaultConfig();
-		// lobby
-		Location soloSpawn = new Location(Bukkit.getWorld(getConfig().getString("world")), getConfig().getInt("multi.spawn.x"), getConfig().getInt("multi.spawn.y"), getConfig().getInt("multi.spawn.z"));
+		World world = Bukkit.getWorld(getConfig().getString("world"));
+		// lobbys
+		Location multiLobby = new Location(world, getConfig().getInt("multi.spawn.x"), getConfig().getInt("multi.spawn.y"), getConfig().getInt("multi.spawn.z"));
+		
 		// liste des spawns au lancement
+			//multi
+		Location multiSpawn = new Location(world, getConfig().getInt("multi.spawnable_point.x"), getConfig().getInt("multi.spawnable_point.y"), getConfig().getInt("multi.spawnable_point.z"));
+			//solo
 		ArrayList<Location> spawns = new ArrayList<Location>();
-		spawns.add(soloSpawn);
+
+
 		// set la game en attente de joueurs
 		setState(GState.WAITING);
 		// set la commande pour join le multi
-		getCommand("wmulti").setExecutor(new LaunchCommands(this, soloSpawn, spawns));
+		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this, multiLobby, multiSpawn));
 		// message à l'execution
 		LOGGER.info("[WAVES - Bucher Plugin] - Plugin en cours d'execution");
 	}
