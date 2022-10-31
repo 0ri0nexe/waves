@@ -3,9 +3,20 @@ world: "world"
 multi:
   spawn:
     x: 100
-    y: 100
+    y: 101
     z: 100
   spawnable_point:
     x: 92
-    y: 100
+    y: 101
     z: 100
+  mobs_points:
+    y: 101
+
+    x1: 85
+    z1: 100
+
+    x2: 92
+    z2: 91
+
+    x3: 92
+    z3: 109

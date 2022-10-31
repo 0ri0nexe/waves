@@ -34,7 +34,7 @@ public class MultiGameCycle extends BukkitRunnable {
             messagePlayers("§c" + timer);
         }
         if (timer == 0){
-            messagePlayers("§cBonne chance !");
+            messagePlayers("§5-Bonne chance !");
         }
         timer--;
     }

@@ -8,9 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.orionexe.waves.commands.MultiLaunchCommands;
+import fr.orionexe.waves.listeners.GPlayerListener;
 
 /*
  * waves java plugin
@@ -45,6 +47,8 @@ public class Plugin extends JavaPlugin
 			//solo
 		ArrayList<Location> spawns = new ArrayList<Location>();
 
+		// set les spawns des mobs
+
 
 		// set la game en attente de joueurs
 		setState(GState.WAITING);
@@ -52,9 +56,15 @@ public class Plugin extends JavaPlugin
 		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this, multiLobby, multiSpawn));
 		// message à l'execution
 		LOGGER.info("[WAVES - Bucher Plugin] - Plugin en cours d'execution");
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new GPlayerListener(this), this);
 	}
 
 	public void onDisable(){
 		LOGGER.info("[WAVES - Bucher Plugin] - Plugin arrete");
+	}
+
+	public void checkWin(){
+		
 	}
 }
