@@ -84,7 +84,8 @@ public class Plugin extends JavaPlugin
 		if (!arenaFile.exists()){
 			try {
 				arenaFile.createNewFile();
-			} catch (IOException e) {
+			} 
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
