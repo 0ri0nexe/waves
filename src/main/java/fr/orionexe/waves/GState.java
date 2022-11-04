@@ -1,5 +1,5 @@
 package fr.orionexe.waves;
 
 public enum GState {
-    LOBBY, WAITING, STARTING, PLAYING, FINISH
+    LOBBY, WAITING, STARTING, INWAWE, BETWEENWAWES, FINISH
 }

@@ -1,4 +1,4 @@
-package fr.orionexe.waves;
+package fr.orionexe.waves.location_classes;
 
 import java.util.ArrayList;
 import java.util.Random;

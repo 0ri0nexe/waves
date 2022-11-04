@@ -1,10 +1,15 @@
 world: "world"
 
 multi:
-  spawn:
+  lobby:
     x: 100
     y: 101
     z: 100
+  end:
+    x: 105
+    y: 100
+    
+    z: 72
   spawnable_point:
     x: 92
     y: 101

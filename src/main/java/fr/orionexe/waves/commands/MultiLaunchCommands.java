@@ -1,5 +1,7 @@
 package fr.orionexe.waves.commands;
 
+import java.util.List;
+
 /*
  * commande /wmulti
  */
@@ -11,6 +13,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.orionexe.waves.GKind;
 import fr.orionexe.waves.GState;
 import fr.orionexe.waves.Plugin;
 import fr.orionexe.waves.tasks.AutoStartTask;
@@ -20,11 +23,13 @@ public class MultiLaunchCommands implements CommandExecutor {
     private Plugin main;
     private Location lobby;
     private Location inGameSpawn;
+    private List<Location> mobsSpawns;
 
-    public MultiLaunchCommands(Plugin main, Location lobby, Location inGameSpawn){
+    public MultiLaunchCommands(Plugin main, Location lobby, Location inGameSpawn, List<Location> mobsSpawns){
         this.main = main;
         this.lobby = lobby;
         this.inGameSpawn = inGameSpawn;
+        this.mobsSpawns = mobsSpawns;
     }
 
     @Override
@@ -50,9 +55,10 @@ public class MultiLaunchCommands implements CommandExecutor {
                 player.setGameMode(GameMode.ADVENTURE);
 
                 if (main.isState(GState.WAITING) && main.getPlayers().size() == 1){
-                    AutoStartTask start = new AutoStartTask(main, main.getPlayers(), inGameSpawn);
+                    AutoStartTask start = new AutoStartTask(main, main.getPlayers(), inGameSpawn, mobsSpawns);
                     start.runTaskTimer(main, 0, 20);
                     main.setState(GState.STARTING);
+                    main.setKind(GKind.MULTI);
                 }
 
                 return true;

@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.orionexe.waves.GState;
 import fr.orionexe.waves.Plugin;
-import fr.orionexe.waves.SpawnableArea;
+import fr.orionexe.waves.location_classes.SpawnableArea;
 
 public class AutoStartTask extends BukkitRunnable {
     
@@ -18,21 +18,26 @@ public class AutoStartTask extends BukkitRunnable {
     private List<Player> players;
     private ArrayList<Location> soloSpawns;
     private Location multiSpawn;
+
+    private List<Location> mobsSpawns;
+
     private boolean solo = false;
     private boolean multi = false;
 
-    public AutoStartTask(Plugin main, List<Player> players, ArrayList<Location> soloSpawns){
+    public AutoStartTask(Plugin main, List<Player> players, ArrayList<Location> soloSpawns, List<Location> mobsSpawns){
         this.main = main;
         this.players = players;
         this.soloSpawns = soloSpawns;
         this.solo = true;
+        this.mobsSpawns = mobsSpawns;
     }
 
-    public AutoStartTask(Plugin main, List<Player> players, Location multiSpawn){
+    public AutoStartTask(Plugin main, List<Player> players, Location multiSpawn, List<Location> mobsSpawns){
         this.main = main;
         this.players = players;
         this.multiSpawn = multiSpawn;
         this.multi = true;
+        this.mobsSpawns = mobsSpawns;
     }
 
     private void textPlayers(String message){
@@ -50,7 +55,7 @@ public class AutoStartTask extends BukkitRunnable {
 
         if (timer == 0){
             textPlayers("Le jeu commence !");
-            main.setState(GState.PLAYING);
+            main.setState(GState.BETWEENWAWES);
 
             if (this.solo){
                 for (Player pl: main.getPlayers()){
@@ -61,14 +66,14 @@ public class AutoStartTask extends BukkitRunnable {
                 for (Player pl: main.getPlayers()){
                     pl.teleport(multiSpawn);
                 }
-                MultiGameCycle cycle = new MultiGameCycle(main, players);
+                MultiGameCycle cycle = new MultiGameCycle(main, players, mobsSpawns);
                 cycle.runTaskTimer(main, 0, 20);
             }
 
             cancel();
         }
         if (timer != 0){
-            textPlayers("Le jeu va commencer dans " + timer);
+            textPlayers("La partie commence dans : " + timer);
         }
         timer--;        
     }
