@@ -1,5 +1,5 @@
 package fr.orionexe.waves;
 
-public enum GState {
+public enum MultiArenaState {
     LOBBY, WAITING, STARTING, INWAWE, BETWEENWAWES, FINISH
 }

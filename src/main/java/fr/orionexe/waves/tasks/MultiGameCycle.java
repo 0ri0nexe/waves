@@ -10,12 +10,12 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.orionexe.waves.Plugin;
+import fr.orionexe.waves.location_classes.arenas.MultiArena;
 
 public class MultiGameCycle extends BukkitRunnable {
 
     private Plugin main; // instance principale
-    private List<Player> players; // joueurs de la partie
-    private List<Location> mobsSpawns;
+    private MultiArena arena; //l'arène de jeu
 
     private int timer = 5; // timer avant que la game ne commence
     private boolean timerIsActive = true; // evite que la partie ne commence pendant le timer
@@ -23,15 +23,14 @@ public class MultiGameCycle extends BukkitRunnable {
     private int timeBeforeContinue = 0; // temps entre les vagues (0 quand la game commence)
     private boolean haveAlreadyStarted = false; // déclencheur des mobs
 
-    public MultiGameCycle(Plugin main, List<Player> players, List<Location> mobsSpawns){
+    public MultiGameCycle(Plugin main, MultiArena arena){
         this.main = main;
-        this.players = players;
-        this.mobsSpawns = mobsSpawns;
+        this.arena = arena;
     }
 
     //envoie un message à tous les joueurs de la game
     private void messagePlayers(String message){
-        for(Player pl: players){
+        for(Player pl: arena.getPlayers()){
             pl.sendMessage(message);
         }
     }
@@ -43,15 +42,10 @@ public class MultiGameCycle extends BukkitRunnable {
         }
         else if (timeBeforeContinue == 0){
             if (!haveAlreadyStarted){
-                Zombie zombies = (Zombie) main.getWorld().spawnEntity(getRandomSpawn(), EntityType.ZOMBIE);
+                Zombie zombie = (Zombie) main.getWorld().spawnEntity(arena.getMobsSpawns().getRandomSpawn(), EntityType.ZOMBIE);
                 haveAlreadyStarted = true;
             }
         }
-    }
-
-    private Location getRandomSpawn(){
-        Random r = new Random();
-        return mobsSpawns.get(r.nextInt(mobsSpawns.size()));
     }
 
     public void manageTimer(){

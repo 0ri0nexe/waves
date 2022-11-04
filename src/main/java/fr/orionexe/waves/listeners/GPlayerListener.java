@@ -9,7 +9,7 @@ import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.orionexe.waves.GKind;
-import fr.orionexe.waves.GState;
+import fr.orionexe.waves.MultiArenaState;
 import fr.orionexe.waves.Plugin;
 
 public class GPlayerListener implements Listener{
@@ -22,17 +22,23 @@ public class GPlayerListener implements Listener{
 
     @EventHandler
     public void onQuit(PlayerQuitEvent evt){
-        if (main.getPlayers().contains(evt.getPlayer())){
-            main.getPlayers().remove(evt.getPlayer());
+
+        Player quitter = (Player)evt.getPlayer();
+
+        if (main.getArenaByPlayer(quitter).getPlayers().contains(evt.getPlayer())){
+            main.getArenaByPlayer(quitter).getPlayers().remove(quitter);
         }
     }
     @EventHandler
     public void onDamage(EntityDamageEvent evt){
-        if (main.getPlayers().contains(evt.getEntity())){
-            if (!main.isState(GState.BETWEENWAWES) && !main.isState(GState.INWAWE)){
-                evt.setCancelled(true);
-                return;
-            }
+        if (evt.getEntity() instanceof Player)
+        return;
+        Player victim = (Player)evt.getEntity();
+
+
+        if (main.getArenaByPlayer(victim) == null || !main.getArenaByPlayer(victim).isstarted()){
+            evt.setCancelled(true);
+            return;
         }
         
     }

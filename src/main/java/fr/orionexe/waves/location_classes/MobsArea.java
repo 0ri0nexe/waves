@@ -13,6 +13,10 @@ public class MobsArea {
         this.spawns = spawns;
     }
 
+    public List<Location> getSpawns() {
+        return spawns;
+    }
+
     public Location getRandomSpawn(){
 
         Random r = new Random();
