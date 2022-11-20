@@ -1,6 +1,7 @@
 package fr.orionexe.waves.location_classes.arenas;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import fr.orionexe.waves.MultiArenaState;
 import fr.orionexe.waves.location_classes.MobsArea;
@@ -10,13 +11,18 @@ public class MultiArena extends Arena{
     private MobsArea mobSpawns;
     private Location spawn;
 
-    private MultiArenaState currentGState = MultiArenaState.WAITING;
+    private MultiArenaState currentGState;
 
     public MultiArena(String name, MobsArea mobSpawns, Location spawn, Location lobby){
         super(name, lobby);
         this.mobSpawns = mobSpawns;
         this.spawn = spawn;
         this.isstarted = false;
+        this.currentGState = MultiArenaState.WAITING;
+    }
+
+    public void addPlayer(Player pl){
+        players.add(pl);
     }
 
     public void setState(MultiArenaState newState){

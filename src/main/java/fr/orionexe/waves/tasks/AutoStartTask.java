@@ -15,6 +15,7 @@ public class AutoStartTask extends BukkitRunnable {
 
     protected AutoStartTask(Plugin main, Arena arena){
         this.arena = arena;
+        this.main = main;
     }
 
     private void textPlayers(String message){
@@ -28,19 +29,17 @@ public class AutoStartTask extends BukkitRunnable {
 
         if (timer == 0){
             textPlayers("Le jeu commence !");
-            // if (this.solo){
-            //     for (Player pl: main.getPlayers()){
-            //         pl.teleport(new SpawnableArea(soloSpawns).getRandomSpawn());
-            //     }
-            // }
+
             afterTimer();
             cancel();
         }
         if (timer != 0){
             textPlayers("La partie commence dans : " + timer);
         }
+        for (Player player: arena.getPlayers()){
+            player.setLevel(timer);
+        }
         timer--; 
-
     }
 
     protected void afterTimer(){

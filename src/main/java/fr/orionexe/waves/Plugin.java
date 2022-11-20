@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.orionexe.waves.commands.ManagementCommands;
 import fr.orionexe.waves.commands.MultiLaunchCommands;
 import fr.orionexe.waves.listeners.GPlayerListener;
 import fr.orionexe.waves.location_classes.MobsArea;
@@ -27,46 +28,51 @@ import fr.orionexe.waves.location_classes.arenas.MultiArena;
 */
 public class Plugin extends JavaPlugin
 {
-
-	private List<MultiArena> multiArenas= new ArrayList<>();
-
 	private static final Logger LOGGER=Logger.getLogger("waves");
-	private MultiArenaState currentState;
+
+	
 
 	private World world = Bukkit.getWorld(getConfig().getString("world"));
 	// fin multi
-	public Location multiEndLocation = new Location(world, getConfig().getInt("multi.end.x"), getConfig().getInt("multi.end.y"), getConfig().getInt("multi.end.z"));
 
 	private File arenaFile;
 	private YamlConfiguration arenaConfig;
 	private MultiArenaManager multiArenaManager = new MultiArenaManager();
 
-	public List<MultiArena> getMultiArenas(){
-		return multiArenas;
-	}
-
 	public World getWorld(){
 		return this.world;
 	}
-
-	public Location getMultiEndLocation(){
-		return multiEndLocation;
-	}
-
 
 	public MultiArenaManager getArenaManager(){
 		return multiArenaManager;
 	}
 
+	public List<MultiArena> getMultiArenas(){
+		return multiArenaManager.getArenas();
+	}
+
 	// setter et getter d'enumerations
 
 	public Arena getArenaByPlayer(Player pl){
-		
+		for (Arena ar : multiArenaManager.getArenas()){
+			if (ar.getPlayers().contains(pl))
+			return ar;
+		}
+		return null;
+	}
+
+	public Arena getArenaByName(String name){
+		for (Arena ar : multiArenaManager.getArenas()){
+			if (ar.getName().equalsIgnoreCase(name))
+			return ar;
+		}
+		return null;
 	}
 
 	// coordonnées en location
 	public Location coordsToLoc(String label){
-		String[] parsedLoc = label.split(",");
+		System.out.println(label);
+		String[] parsedLoc = label.split("/");
 		double x = Double.valueOf(parsedLoc[0]);
 		double y = Double.valueOf(parsedLoc[1]);	
 		double z = Double.valueOf(parsedLoc[2]);
@@ -95,38 +101,44 @@ public class Plugin extends JavaPlugin
 	}
 
 	public String locToCoords(Location loc){
-		return loc.getX() + "," + loc.getY() + "," + loc.getZ();
-	} 
+		return loc.getX() + "/" + loc.getY() + "/" + loc.getZ();
+	}
 
 	public void onEnable(){
 
+		saveDefaultConfig();
 		loadArenaConfig();
-		// charger les arenes
-		ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");
 		
-		for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
-
-			String spawnString = arenaSection.getString("multi." + str + ".spawn");
-			String lobbyString = arenaSection.getString("multi." + str + ".lobby");
-			String mobsSpawnsStrings = arenaSection.getString("multi." + str + ".mobs_points");
-			String name = str;
-
-			Location spawn = coordsToLoc(spawnString);
-			Location lobby = coordsToLoc(lobbyString);
-			List<Location> mobsSpawns = new ArrayList<>();
-			for(int i = 0; i < mobsSpawnsStrings.split(";").length; i++){
-				mobsSpawns.add(coordsToLoc(mobsSpawnsStrings.split(";")[i]));
+		// charger les arenes
+		world = Bukkit.getWorld(getConfig().getString("world"));
+		try{
+			ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");
+			
+			for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
+				String spawnString = arenaSection.getString("multi." + str + ".spawn");
+				String lobbyString = arenaSection.getString("multi." + str + ".lobby");
+				List<String> mobsSpawnsStrings = arenaSection.getStringList("multi." + str + ".mobs_points");
+				String name = str;
+	
+				Location spawn = coordsToLoc(spawnString);
+				Location lobby = coordsToLoc(lobbyString);
+				List<Location> mobsSpawns = new ArrayList<>();
+				for(int i = 0; i < mobsSpawnsStrings.size(); i++){
+					mobsSpawns.add(coordsToLoc(mobsSpawnsStrings.get(i)));
+				}
+				MobsArea mobA = new MobsArea(mobsSpawns);
+	
+				MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby);
+				multiArenaManager.addArena(multiArena);
 			}
-			MobsArea mobA = new MobsArea(mobsSpawns);
-
-			MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby);
-			multiArenaManager.addArena(multiArena);
+		}
+		catch (NullPointerException e){
+			LOGGER.info("aucune arène trouvée");
 		}
 
-		// set la game en attente de joueurs
-
-		// set la commande pour join le multi
+		// set les commandes
 		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this, multiArenaManager.getNextArena()));
+		getCommand("wv").setExecutor(new ManagementCommands(arenaConfig, arenaFile, this));
 		// message à l'execution
 		LOGGER.info("[WAVES - Bucher Plugin] - Plugin en cours d'execution");
 		PluginManager pm = getServer().getPluginManager();
