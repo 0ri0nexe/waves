@@ -115,11 +115,15 @@ public class Plugin extends JavaPlugin
 			ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");
 			
 			for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
+				String firstCoords = arenaSection.getString("multi." + str + ".first_coords");
+				String secondCoords = arenaSection.getString("multi." + str + ".second_coords");
 				String spawnString = arenaSection.getString("multi." + str + ".spawn");
 				String lobbyString = arenaSection.getString("multi." + str + ".lobby");
 				List<String> mobsSpawnsStrings = arenaSection.getStringList("multi." + str + ".mobs_points");
 				String name = str;
 	
+				Location firstLoc = coordsToLoc(firstCoords);
+				Location secondLoc = coordsToLoc(secondCoords);
 				Location spawn = coordsToLoc(spawnString);
 				Location lobby = coordsToLoc(lobbyString);
 				List<Location> mobsSpawns = new ArrayList<>();
@@ -128,7 +132,7 @@ public class Plugin extends JavaPlugin
 				}
 				MobsArea mobA = new MobsArea(mobsSpawns);
 	
-				MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby);
+				MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby, firstLoc, secondLoc);
 				multiArenaManager.addArena(multiArena);
 			}
 		}

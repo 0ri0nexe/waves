@@ -13,8 +13,8 @@ public class MultiArena extends Arena{
 
     private MultiArenaState currentGState;
 
-    public MultiArena(String name, MobsArea mobSpawns, Location spawn, Location lobby){
-        super(name, lobby);
+    public MultiArena(String name, MobsArea mobSpawns, Location spawn, Location lobby, Location fLocation, Location sLocation){
+        super(name, lobby, fLocation, sLocation);
         this.mobSpawns = mobSpawns;
         this.spawn = spawn;
         this.isstarted = false;

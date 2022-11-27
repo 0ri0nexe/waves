@@ -12,9 +12,14 @@ public class Arena {
     protected boolean isstarted;
     protected List<Player> players = new ArrayList<>();
 
-    protected Arena(String name, Location lobby){
+    protected Location firstCoords;
+    protected Location secondCoords;
+
+    protected Arena(String name, Location lobby, Location fLocation, Location sLocation){
         this.name = name;
         this.lobby = lobby;
+        this.firstCoords = fLocation;
+        this.secondCoords = sLocation;
     }
 
     public String getName(){
@@ -38,7 +43,7 @@ public class Arena {
     }
 
     public Arena asArena(){
-        return new Arena(name, lobby);
+        return new Arena(name, lobby, firstCoords, secondCoords);
     }
 
 }
