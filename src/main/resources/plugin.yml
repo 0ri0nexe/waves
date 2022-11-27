@@ -7,3 +7,5 @@ commands:
     permission: waves.join.solo
   wmulti:
     permission: waves.join.multi
+  wv:
+    premission: waves.manage_arenas
