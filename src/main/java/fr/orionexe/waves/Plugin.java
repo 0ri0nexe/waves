@@ -3,6 +3,7 @@ package fr.orionexe.waves;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.orionexe.waves.commands.ConstructTabCompleter;
 import fr.orionexe.waves.commands.ManagementCommands;
 import fr.orionexe.waves.commands.MultiLaunchCommands;
 import fr.orionexe.waves.listeners.GPlayerListener;
@@ -30,20 +32,19 @@ public class Plugin extends JavaPlugin
 {
 	private static final Logger LOGGER=Logger.getLogger("waves");
 
-	
-
 	private World world = Bukkit.getWorld(getConfig().getString("world"));
 	// fin multi
 
 	private File arenaFile;
 	private YamlConfiguration arenaConfig;
 	private MultiArenaManager multiArenaManager = new MultiArenaManager();
+	private List<String> allArenas; // inclus les arènes qui ne sont pas encore finies
 
 	public World getWorld(){
 		return this.world;
 	}
 
-	public MultiArenaManager getArenaManager(){
+	public MultiArenaManager getMultiArenaManager(){
 		return multiArenaManager;
 	}
 
@@ -98,6 +99,11 @@ public class Plugin extends JavaPlugin
 
 		//chargement de la config
 		arenaConfig = YamlConfiguration.loadConfiguration(arenaFile);
+		List<String> parameters = Arrays.asList("multi", "solo");
+		arenaConfig.addDefault("arenas", "");
+		for (String para : parameters){
+			arenaConfig.addDefault("arenas." + para, true);
+		}
 	}
 
 	public String locToCoords(Location loc){
@@ -111,9 +117,9 @@ public class Plugin extends JavaPlugin
 		
 		// charger les arenes
 		world = Bukkit.getWorld(getConfig().getString("world"));
-		try{
+		
 			ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");
-			
+		try{	
 			for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
 				String firstCoords = arenaSection.getString("multi." + str + ".first_coords");
 				String secondCoords = arenaSection.getString("multi." + str + ".second_coords");
@@ -121,7 +127,7 @@ public class Plugin extends JavaPlugin
 				String lobbyString = arenaSection.getString("multi." + str + ".lobby");
 				List<String> mobsSpawnsStrings = arenaSection.getStringList("multi." + str + ".mobs_points");
 				String name = str;
-	
+				
 				Location firstLoc = coordsToLoc(firstCoords);
 				Location secondLoc = coordsToLoc(secondCoords);
 				Location spawn = coordsToLoc(spawnString);
@@ -134,15 +140,18 @@ public class Plugin extends JavaPlugin
 	
 				MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby, firstLoc, secondLoc);
 				multiArenaManager.addArena(multiArena);
+				allArenas.add(name);
 			}
 		}
 		catch (NullPointerException e){
-			LOGGER.info("aucune arène trouvée");
+			LOGGER.info("arenas.yml --> \"arenas.multi\" n'existe pas");
 		}
 
 		// set les commandes
 		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this, multiArenaManager.getNextArena()));
+		
 		getCommand("wv").setExecutor(new ManagementCommands(arenaConfig, arenaFile, this));
+		getCommand("wv").setTabCompleter(new ConstructTabCompleter(this));
 		// message à l'execution
 		LOGGER.info("[WAVES - Bucher Plugin] - Plugin en cours d'execution");
 		PluginManager pm = getServer().getPluginManager();
