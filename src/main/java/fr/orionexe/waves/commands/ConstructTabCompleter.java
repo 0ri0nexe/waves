@@ -49,11 +49,7 @@ public class ConstructTabCompleter implements TabCompleter{
         secondArgsList.add("list");
         secondArgsList.add("createarena");
 
-        List<MultiArena> multiArenasList = main.getMultiArenaManager().getArenas();
-        List<String> multiArenasNamesList = new ArrayList<>();
-        for (MultiArena arena : multiArenasList){
-            multiArenasNamesList.add(arena.getName());
-        }
+        List<String> multiArenasNamesList = main.getAllMultiArenas();
 
         if (cmd.getName().equalsIgnoreCase("wv")){
 
@@ -64,17 +60,19 @@ public class ConstructTabCompleter implements TabCompleter{
             if (args[0].equalsIgnoreCase("multi")){
                 if (args.length == 2) {
                 return getValidsStrings(secondArgsList, args[1]);
+                }
+                else if (args.length == 3 & parametersArenasListable.contains(args[1])) {
+                    return getValidsStrings(multiArenasNamesList, args[2]);
+                }
             }
 
-            else if (args.length == 3 & parametersArenasListable.contains(args[1])) {
-                return getValidsStrings(multiArenasNamesList, args[2]);
-            }
-            }
-            else if (args[0].equalsIgnoreCase("solo")){
-                return secondArgsList;
-            }
-            // set la liste des arènes pour le solo
+            
         }
+
+        else if (args[0].equalsIgnoreCase("solo")){
+            return secondArgsList;
+        }
+            // set la liste des arènes pour le solo
         return null;
     }
     

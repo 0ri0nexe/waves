@@ -17,17 +17,24 @@ import fr.orionexe.waves.tasks.MultiAutoStartTask;
 public class MultiLaunchCommands implements CommandExecutor {
 
     private Plugin main;
-    private MultiArena arena;
 
-    public MultiLaunchCommands(Plugin main, MultiArena arena){
+    public MultiLaunchCommands(Plugin main){
         this.main = main;
-        this.arena = arena;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        
+        
+        
         if (sender instanceof Player){
             if (cmd.getName().equalsIgnoreCase("wmulti" ) && args.length == 0){
+                MultiArena arena = main.getMultiArenaManager().getNextArena();
+                if (arena == null){
+                    System.out.println("aucune arène trouvée");
+                    return true;
+                }
+                
                 Player player = (Player)sender;
                 player.sendMessage("bienvenu dans le jeu !");
 

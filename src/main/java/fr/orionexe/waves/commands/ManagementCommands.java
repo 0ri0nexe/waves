@@ -66,7 +66,7 @@ public class ManagementCommands implements CommandExecutor{
                 //set les paramètres de l'arène
                 if (args[1].equalsIgnoreCase("setlobby")){
                     
-                    player.sendMessage("vous venez de set le lobby de l'arène §5" + args[1]);
+                    player.sendMessage("vous venez de set le lobby de l'arène §5" + args[2]);
                     arenaConfig.set("arenas.multi." + args[2] + ".lobby", main.locToCoords(playerLocation));
                     try {
                         arenaConfig.save(arenaFile);
@@ -133,8 +133,8 @@ public class ManagementCommands implements CommandExecutor{
 
                 if (args[1].equalsIgnoreCase("list") && args.length == 2){
                     String message = "Liste des arènes :\n multi:";
-                    for (MultiArena ar : main.getMultiArenas()){
-                        message += "\n  -" + ar.getName();
+                    for (String ar : main.getAllMultiArenas()){
+                        message += "\n  -" + ar;
                     }
 
                     player.sendMessage(message);

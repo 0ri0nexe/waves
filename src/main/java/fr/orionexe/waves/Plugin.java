@@ -38,7 +38,7 @@ public class Plugin extends JavaPlugin
 	private File arenaFile;
 	private YamlConfiguration arenaConfig;
 	private MultiArenaManager multiArenaManager = new MultiArenaManager();
-	private List<String> allArenas; // inclus les arènes qui ne sont pas encore finies
+	private List<String> allMultiArenas = new ArrayList<>(); // inclus les arènes qui ne sont pas encore finies
 
 	public World getWorld(){
 		return this.world;
@@ -46,6 +46,10 @@ public class Plugin extends JavaPlugin
 
 	public MultiArenaManager getMultiArenaManager(){
 		return multiArenaManager;
+	}
+
+	public List<String> getAllMultiArenas(){
+		return allMultiArenas;
 	}
 
 	public List<MultiArena> getMultiArenas(){
@@ -99,11 +103,6 @@ public class Plugin extends JavaPlugin
 
 		//chargement de la config
 		arenaConfig = YamlConfiguration.loadConfiguration(arenaFile);
-		List<String> parameters = Arrays.asList("multi", "solo");
-		arenaConfig.addDefault("arenas", "");
-		for (String para : parameters){
-			arenaConfig.addDefault("arenas." + para, true);
-		}
 	}
 
 	public String locToCoords(Location loc){
@@ -118,14 +117,16 @@ public class Plugin extends JavaPlugin
 		// charger les arenes
 		world = Bukkit.getWorld(getConfig().getString("world"));
 		
-			ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");
-		try{	
-			for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
-				String firstCoords = arenaSection.getString("multi." + str + ".first_coords");
-				String secondCoords = arenaSection.getString("multi." + str + ".second_coords");
+		ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");	
+
+		for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
+			LOGGER.info(str);
+			try {
+				String firstCoords = arenaSection.getString("multi." + str + ".loc1");
+				String secondCoords = arenaSection.getString("multi." + str + ".loc2");
 				String spawnString = arenaSection.getString("multi." + str + ".spawn");
 				String lobbyString = arenaSection.getString("multi." + str + ".lobby");
-				List<String> mobsSpawnsStrings = arenaSection.getStringList("multi." + str + ".mobs_points");
+				List<String> mobsSpawnsStrings = arenaSection.getStringList(str + ".mobs_points");
 				String name = str;
 				
 				Location firstLoc = coordsToLoc(firstCoords);
@@ -140,15 +141,19 @@ public class Plugin extends JavaPlugin
 	
 				MultiArena multiArena = new MultiArena(name, mobA, spawn, lobby, firstLoc, secondLoc);
 				multiArenaManager.addArena(multiArena);
-				allArenas.add(name);
+				System.out.println("arene complete : " + name);
+				allMultiArenas.add(name);
 			}
-		}
-		catch (NullPointerException e){
-			LOGGER.info("arenas.yml --> \"arenas.multi\" n'existe pas");
+			catch (NullPointerException e){
+				if (str != null){
+					allMultiArenas.add(str);
+					System.out.println("arene incomplete : " + str);
+				}
+			}
 		}
 
 		// set les commandes
-		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this, multiArenaManager.getNextArena()));
+		getCommand("wmulti").setExecutor(new MultiLaunchCommands(this));
 		
 		getCommand("wv").setExecutor(new ManagementCommands(arenaConfig, arenaFile, this));
 		getCommand("wv").setTabCompleter(new ConstructTabCompleter(this));
