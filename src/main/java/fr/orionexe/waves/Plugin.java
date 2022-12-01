@@ -3,7 +3,6 @@ package fr.orionexe.waves;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -32,7 +31,7 @@ public class Plugin extends JavaPlugin
 {
 	private static final Logger LOGGER=Logger.getLogger("waves");
 
-	private World world = Bukkit.getWorld(getConfig().getString("world"));
+	private World world;
 	// fin multi
 
 	private File arenaFile;
@@ -103,6 +102,7 @@ public class Plugin extends JavaPlugin
 
 		//chargement de la config
 		arenaConfig = YamlConfiguration.loadConfiguration(arenaFile);
+		this.world = Bukkit.getWorld(arenaConfig.getString("world"));
 	}
 
 	public String locToCoords(Location loc){
@@ -111,12 +111,10 @@ public class Plugin extends JavaPlugin
 
 	public void onEnable(){
 
-		saveDefaultConfig();
 		loadArenaConfig();
 		
 		// charger les arenes
-		world = Bukkit.getWorld(getConfig().getString("world"));
-		
+
 		ConfigurationSection arenaSection = arenaConfig.getConfigurationSection("arenas");	
 
 		for (String str : arenaSection.getConfigurationSection("multi").getKeys(false)){
@@ -126,7 +124,7 @@ public class Plugin extends JavaPlugin
 				String secondCoords = arenaSection.getString("multi." + str + ".loc2");
 				String spawnString = arenaSection.getString("multi." + str + ".spawn");
 				String lobbyString = arenaSection.getString("multi." + str + ".lobby");
-				List<String> mobsSpawnsStrings = arenaSection.getStringList(str + ".mobs_points");
+				List<String> mobsSpawnsStrings = arenaSection.getStringList("multi." + str + ".mobs_points");
 				String name = str;
 				
 				Location firstLoc = coordsToLoc(firstCoords);
@@ -134,8 +132,9 @@ public class Plugin extends JavaPlugin
 				Location spawn = coordsToLoc(spawnString);
 				Location lobby = coordsToLoc(lobbyString);
 				List<Location> mobsSpawns = new ArrayList<>();
-				for(int i = 0; i < mobsSpawnsStrings.size(); i++){
+				for (int i = 0; i < mobsSpawnsStrings.size(); i++){
 					mobsSpawns.add(coordsToLoc(mobsSpawnsStrings.get(i)));
+					System.out.println("spawn de mob :" + mobsSpawnsStrings.get(i));
 				}
 				MobsArea mobA = new MobsArea(mobsSpawns);
 	

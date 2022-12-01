@@ -22,6 +22,12 @@ public class Arena {
         this.secondCoords = sLocation;
     }
 
+    public void messagePlayers(String message){
+        for (Player pl : players){
+            pl.sendMessage(message);
+        }
+    }
+
     public String getName(){
         return name;
     }
