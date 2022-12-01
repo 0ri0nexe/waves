@@ -85,15 +85,19 @@ public class MultiGameCycle extends BukkitRunnable {
         timer--;
     }
 
-    private void playTime(){
+    public boolean checkWin(){
         boolean monstersCleared = true;
         for(Entity monster : monsters){
             if (!monster.isDead()){
                 monstersCleared = false;
             }
         }
+        return monstersCleared;
+    }
+
+    private void playTime(){
         
-        if (monstersCleared){
+        if (checkWin()){
             monsters.clear();
             arena.messagePlayers("tous les monstres ont été éliminé !");
             setState(MultiGState.BETWEEN);
